@@ -87,13 +87,40 @@ def movie_list():
     movies = Movie.query.order_by('title').all()
     return render_template("movie_list.html", movies=movies)
 
-@app.route("/movies/<int:movie_id>")
+@app.route("/movie/<int:movie_id>")
 def show_movie_info(movie_id):
     """Shows movie info"""
 
     movie = Movie.query.get(movie_id)
 
     return render_template("movie_info.html", movie=movie, login=session.get('user'))
+
+
+@app.route('/rating-submit', methods=['POST'])
+def sumbit_rating():
+    """checks for existing review by user, if none, creates new."""
+
+    user_id = session.get('user')
+
+    rating = request.form.get("rating")
+
+    movie_id = request.form.get('movie_id')
+
+    review = Rating.query.filter_by(user_id=user_id, movie_id=movie_id).first()
+    # if rating already exists, checks updates review, if not, creates review
+    # for password again
+    if review:
+        review.score = int(rating)
+        flash("Your rating has been updated")
+        db.session.commit()
+        return redirect('/movie/' + str(review.movie_id))
+
+    else:
+        rating = Rating(user_id=user_id, movie_id=movie_id, score=rating)
+        db.session.add(rating)
+        db.session.commit()
+        flash("Your rating has been created")
+        return redirect('/movie/' + str(rating.movie_id))
 
 
 if __name__ == "__main__":

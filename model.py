@@ -59,7 +59,7 @@ class Rating(db.Model):
     user = db.relationship("User", backref=db.backref("ratings", order_by=rating_id))
 
     # Define relationship to movie
-    movie = db.relationship("Movie", backref=db.backref("movies", order_by=rating_id))
+    movie = db.relationship("Movie", backref=db.backref("ratings", order_by=rating_id))
 
     def __repr__(self):
         """Provide helpful representation when printed."""
