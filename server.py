@@ -80,6 +80,21 @@ def show_user_profile(user_id):
     
     return render_template("user_info.html", user=user)
 
+@app.route('/movies')
+def movie_list():
+    """Show list of movies"""
+
+    movies = Movie.query.order_by('title').all()
+    return render_template("movie_list.html", movies=movies)
+
+@app.route("/movies/<int:movie_id>")
+def show_movie_info(movie_id):
+    """Shows movie info"""
+
+    movie = Movie.query.get(movie_id)
+
+    return render_template("movie_info.html", movie=movie, login=session.get('user'))
+
 
 if __name__ == "__main__":
     # We have to set debug=True here, since it has to be True at the point
