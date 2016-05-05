@@ -87,7 +87,7 @@ def movie_list():
     movies = Movie.query.order_by('title').all()
     return render_template("movie_list.html", movies=movies)
 
-@app.route("/movie/<int:movie_id>")
+@app.route("/movies/<int:movie_id>")
 def show_movie_info(movie_id):
     """Shows movie info"""
 
@@ -113,24 +113,24 @@ def sumbit_rating():
         review.score = int(rating)
         flash("Your rating has been updated")
         db.session.commit()
-        return redirect('/movie/' + str(review.movie_id))
+        return redirect('/movies/' + str(review.movie_id))
 
     else:
         rating = Rating(user_id=user_id, movie_id=movie_id, score=rating)
         db.session.add(rating)
         db.session.commit()
         flash("Your rating has been created")
-        return redirect('/movie/' + str(rating.movie_id))
+        return redirect('/movies/' + str(rating.movie_id))
 
 
 if __name__ == "__main__":
     # We have to set debug=True here, since it has to be True at the point
     # that we invoke the DebugToolbarExtension
-    app.debug = True
+    app.debug = False
 
     connect_to_db(app)
 
     # Use the DebugToolbar
-    DebugToolbarExtension(app)
+    # DebugToolbarExtension(app)
 
     app.run()
