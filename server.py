@@ -93,7 +93,83 @@ def show_movie_info(movie_id):
 
     movie = Movie.query.get(movie_id)
 
-    return render_template("movie_info.html", movie=movie, login=session.get('user'))
+    # gets logged-in user id from session cookie
+    user_id = session.get('user')
+
+    # gets rating from user for movie if it exists, otherwise binds the rating as None
+    if user_id:    
+        user_rating = Rating.query.filter_by(movie_id=movie_id, user_id=user_id).first()
+
+    else:
+        user_rating = None
+
+    rating_scores = [r.score for r in movie.ratings]
+    avg_rating = float(sum(rating_scores)) / len(rating_scores)
+
+    prediction = None
+
+    if (not user_rating) and user_id:
+        user = User.query.get(user_id)
+        
+        # TODO WHY DO WE NEED THIS IF?
+        if user:
+            prediction = user.predict_rating(movie)
+
+    # if user hasn't rated a movie, uses predicted rating
+    if prediction:
+        effective_rating = prediction
+    # if user has rated, uses rating
+    elif user_rating:
+        effective_rating = user_rating.score
+    # if user hasn't rated and unable to predict a rating, uses None
+    else: 
+        effective_rating = None
+    
+    # instantiates the Eye as a user
+    the_eye = User.query.filter_by(email="the-eye@of-judgment.com").one()
+    
+    #Grabs eyes rating object if it exists
+    eye_rating = Rating.query.filter_by(
+        user_id=the_eye.user_id, movie_id=movie.movie_id).first()
+
+    # predicts the eye's rating if it doesn't have a score of it's own
+    if eye_rating is None:
+        eye_rating = the_eye.predict_rating(movie)
+    else: 
+        eye_rating = eye_rating.score
+
+    # if there is both a rating by the eye and an effective rating, determines the difference
+    if eye_rating and effective_rating:
+        difference = abs(eye_rating - effective_rating)
+    else: 
+        difference = None
+
+    # Depending on how different we are from the Eye, choose a message
+
+    BERATEMENT_MESSAGES = [
+        "I suppose you don't have such bad taste after all.",
+        "I regret every decision that I've ever made that has brought me" +
+            " to listen to your opinion.",
+        "Words fail me, as your taste in movies has clearly failed you.",
+        "That movie is great. For a clown to watch. Idiot.",
+        "Words cannot express the awfulness of your taste."
+    ]
+
+    # since there is a max diff of 4, uses an index equal to the difference
+    if difference is not None:
+        beratement = BERATEMENT_MESSAGES[int(difference)]
+
+    #if unable to predict, no beratement
+    else:
+        beratement = None
+
+    return render_template("movie_info.html", 
+                           movie=movie,
+                           login=user_id,
+                           average=avg_rating,
+                           prediction=prediction,
+                           user_rating=user_rating,
+                           beratement=beratement)
 
 
 @app.route('/rating-submit', methods=['POST'])
@@ -126,11 +202,11 @@ def sumbit_rating():
 if __name__ == "__main__":
     # We have to set debug=True here, since it has to be True at the point
     # that we invoke the DebugToolbarExtension
-    app.debug = False
+    app.debug = True
 
     connect_to_db(app)
 
     # Use the DebugToolbar
-    # DebugToolbarExtension(app)
+    DebugToolbarExtension(app)
 
     app.run()

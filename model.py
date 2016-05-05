@@ -51,7 +51,7 @@ class User(db.Model):
             return 0.0
 
 
-
+# TODO: Why movie object instead of just movie.ratings?
     def predict_rating(self, movie):
         """Predict user's rating of a movie."""
 
@@ -63,6 +63,11 @@ class User(db.Model):
         ]
 
         similarities.sort(reverse=True)
+
+        similarities = [(sim, r) for sim, r in similarities if sim > 0]
+
+        if not similarities:
+            return None
 
         numerator = sum([r.score * sim for sim, r in similarities])
         denominator = sum([sim for sim, r in similarities])
