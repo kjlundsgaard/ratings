@@ -22,8 +22,8 @@
                 </tr>
                 {% for r in user.ratings %}
                 <tr>
-                    <td><a href="/movie/{{ r.movie_id }}">{{ r.rating_id }}</a></td>
-                    <td><a href="/movie/{{ r.movie_id }}">{{ r.movie.title }}</a></td>
+                    <td><a href="/movies/{{ r.movie_id }}">{{ r.rating_id }}</a></td>
+                    <td><a href="/movies/{{ r.movie_id }}">{{ r.movie.title }}</a></td>
                     <td>{{ r.score }}</td>
                 </tr>
                 {% endfor %}
