@@ -1,13 +1,34 @@
 {% extends 'base.html' %}
 {% block content %}
-<h2>{{ user.user_id }}</h2>
+<!-- <div class="container">
+    <div class='row'>
+        <div class="col-xs-12 col-lg-8 col-lg-offset-2"> -->
+            <h2>User # {{ user.user_id }}</h2>
 
-    <p>Age: {{ user.age }}</p>
-    <p>Zipcode: {{ user.zipcode }}</p>
-<ul>
-    {% for r in user.ratings %}
-    <li>Rating ID: {{ r.rating_id }} Movie ID: {{ r.movie_id }} Score: {{ r.score }}</li>
-    {% endfor %}
-</ul>
+            <p>Age: {{ user.age }}</p>
+            <p>Zipcode: {{ user.zipcode }}</p>
+<!--         </div>
 
+    </div>
+</div> -->
+<!-- <div class="container">
+    <div class="row">
+        <div class="col-xs-12 col-lg-8 col-lg-offset-2">     -->
+            <table class="table table-striped">
+                <tr>
+                    <th>Rating ID</th>
+                    <th>Movie Title</th>
+                    <th>Score</th>
+                </tr>
+                {% for r in user.ratings %}
+                <tr>
+                    <td><a href="/movie/{{ r.movie_id }}">{{ r.rating_id }}</a></td>
+                    <td><a href="/movie/{{ r.movie_id }}">{{ r.movie.title }}</a></td>
+                    <td>{{ r.score }}</td>
+                </tr>
+                {% endfor %}
+            </table>
+<!--         </div>
+    </div>
+</div> -->
 {% endblock %}

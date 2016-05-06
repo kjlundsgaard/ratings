@@ -31,12 +31,14 @@ def user_list():
     """Show list of users"""
 
     users = User.query.all()
-    return render_template("user_list.html", users=users)
+    return render_template("user_list.html", users=users,
+                            login=session.get('user'))
 
 @app.route('/login')
 def login():
     """Prompts user for login info"""
-    return render_template('login_form.html')
+    return render_template('login_form.html',
+                            login=session.get('user'))
 
 @app.route('/login-submit', methods=['POST'])
 def sumbit_login():
@@ -78,14 +80,16 @@ def show_user_profile(user_id):
 
     user = User.query.get(user_id)
     
-    return render_template("user_info.html", user=user)
+    return render_template("user_info.html", user=user,
+                            login=session.get('user'))
 
 @app.route('/movies')
 def movie_list():
     """Show list of movies"""
 
     movies = Movie.query.order_by('title').all()
-    return render_template("movie_list.html", movies=movies)
+    return render_template("movie_list.html", movies=movies,
+                            login=session.get('user'))
 
 @app.route("/movies/<int:movie_id>")
 def show_movie_info(movie_id):
@@ -111,7 +115,6 @@ def show_movie_info(movie_id):
     if (not user_rating) and user_id:
         user = User.query.get(user_id)
         
-        # TODO WHY DO WE NEED THIS IF?
         if user:
             prediction = user.predict_rating(movie)
 

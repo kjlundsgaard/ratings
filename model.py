@@ -51,7 +51,6 @@ class User(db.Model):
             return 0.0
 
 
-# TODO: Why movie object instead of just movie.ratings?
     def predict_rating(self, movie):
         """Predict user's rating of a movie."""
 
